@@ -1,33 +1,27 @@
 pipeline {
-    agent {
-        dockerfile {
-            filename 'Dockerfile' // используем Dockerfile из репозитория
-            label ''              // без указания агента
-        }
+    agent any
+
+    tools {
+        maven 'Maven' // если нужен maven
+        jdk 'JDK24'   // или другой, настроенный в Jenkins
     }
 
     stages {
-        stage('Build JAR') {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
             steps {
                 sh './mvnw clean package -DskipTests'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Run') {
             steps {
-                script {
-                    def imageName = 'jenkins-demo-app'
-                    sh "docker build -t ${imageName} ."
-                }
-            }
-        }
-
-        stage('Run Docker Container') {
-            steps {
-                script {
-                    sh 'docker rm -f demo-app || true'
-                    sh 'docker run -d --name demo-app -p 8081:8080 jenkins-demo-app'
-                }
+                sh 'java -jar target/*.jar &'
             }
         }
     }
