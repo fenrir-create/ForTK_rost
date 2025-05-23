@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Введите имя</title>
+</head>
+<body>
+    <h1>Добро пожаловать!</h1>
+    <form action="/hello" method="get">
+        <label for="name">Ваше имя:</label>
+        <input type="text" id="name" name="name" required>
+        <button type="submit">Отправить</button>
+    </form>
+</body>
+</html>
