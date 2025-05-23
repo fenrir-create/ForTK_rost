@@ -1,25 +1,19 @@
 pipeline {
-    agent any
-
-    tools {
-        maven 'Maven' // Название Maven в Jenkins (см. ниже)
-        jdk 'JDK24'   // Название JDK в Jenkins
+    agent {
+        dockerfile {
+            filename 'Dockerfile' // используем Dockerfile из репозитория
+            label ''              // без указания агента
+        }
     }
 
     stages {
-        stage('Clone') {
+        stage('Build JAR') {
             steps {
-                git 'https://github.com/fenrir-create/ForTK_rost'
+                sh './mvnw clean package -DskipTests'
             }
         }
 
-        stage('Build') {
-            steps {
-                sh 'mvn clean package -DskipTests'
-            }
-        }
-
-        stage('Docker Build') {
+        stage('Build Docker Image') {
             steps {
                 script {
                     def imageName = 'jenkins-demo-app'
@@ -32,7 +26,7 @@ pipeline {
             steps {
                 script {
                     sh 'docker rm -f demo-app || true'
-                    sh 'docker run -d --name demo-app -p 8080:8080 jenkins-demo-app'
+                    sh 'docker run -d --name demo-app -p 8081:8080 jenkins-demo-app'
                 }
             }
         }
